@@ -1,0 +1,36 @@
+name: slack
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "pages/standards/**"
+
+  workflow_dispatch:
+    inputs:
+      release-sha:
+        description: SHA of a production release
+        required: true
+jobs:
+  send-notification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v39
+
+      - name: List all changed files
+        run: |
+          source ./sc.sh
+
+          json=$(get_slack_message_json \
+            "$(get_section_json "New Guidelines" ${{ steps.changed-files.outputs.added_files }})" \
+            "$(get_section_json "Updated Guidelines" ${{ steps.changed-files.outputs.modified_files }})" \
+            "$(get_section_json "Deleted Guidelines" ${{ steps.changed-files.outputs.deleted_files }})"
+          )
+
+          echo "$json"
