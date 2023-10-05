@@ -9,9 +9,9 @@ function get_section_json {
   for file in ${files[@]}
   do
     # If the file is `pages/standards/example.md`
-    # we want to strip the `pages` part so the pathname
-    # is `standards/example.md`
-    pathname=$(echo "$file" | sed "s/pages\///")
+    # we want to strip the `pages` part and extension 
+    # so the pathname is `standards/example`
+    pathname=$(echo "$file" | sed "s/pages\///" | sed "s/\.mdx*//")
 
     list_item_markdown="\n• <https://paytrix-io.github.io/web-coding-guidelines/$pathname|$file>"
     markdown+=${list_item_markdown}
