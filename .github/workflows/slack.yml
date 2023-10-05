@@ -36,7 +36,9 @@ jobs:
             "$(get_section_json "Deleted Guidelines" ${{ steps.changed-files.outputs.deleted_files }})"
           )
 
-          echo "result=$json" >> $GITHUB_OUTPUT
+          echo "result<<EOF
+          $json
+          EOF" >> $GITHUB_OUTPUT
 
       - name: Create full Slack message
         run: |
