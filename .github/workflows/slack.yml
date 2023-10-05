@@ -25,7 +25,8 @@ jobs:
         with:
           files: "pages/standards/**"
 
-      - name: List all changed files
+      - name: Generate Slack message body
+        id: slack-message-body
         run: |
           source ./scripts/slack-notification-utils.sh
 
@@ -35,4 +36,32 @@ jobs:
             "$(get_section_json "Deleted Guidelines" ${{ steps.changed-files.outputs.deleted_files }})"
           )
 
-          echo "$json"
+          echo "result=$json" >> $GITHUB_OUTPUT
+
+      - name: Create full Slack message
+        run: |
+          echo "
+            {
+              \"blocks\": [
+                {
+                  \"type\": \"header\",
+                  \"text\": {
+                    \"type\": \"plain_text\",
+                    \"text\": \":rocket: Web Coding Guidelines - Deployed\",
+                    \"emoji\": true
+                  }
+                },
+                {
+                  \"type\": \"section\",
+                  \"text\": {
+                    \"type\": \"mrkdwn\",
+                    \"text\": \"_A new version of Web Coding Guidelines by *${{ github.event.head_commit.author.name }}* has been deployed._\"
+                  }
+                },
+                {
+                  \"type\": \"divider\"
+                }
+                ${{ steps.slack-message-body.outputs.result }}
+              ]
+            }
+          "
