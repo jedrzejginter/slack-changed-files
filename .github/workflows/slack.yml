@@ -27,7 +27,7 @@ jobs:
 
       - name: List all changed files
         run: |
-          source ./sc.sh
+          source ./scripts/slack-notification-utils.sh
 
           json=$(get_slack_message_json \
             "$(get_section_json "New Guidelines" ${{ steps.changed-files.outputs.added_files }})" \
